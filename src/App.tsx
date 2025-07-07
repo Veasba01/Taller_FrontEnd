@@ -3,6 +3,7 @@ import './App.css';
 import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Placeholder from './components/Placeholder';
+import { Servicios } from './components/Servicios';
 
 function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -12,13 +13,7 @@ function App() {
       case 'dashboard':
         return <Dashboard />;
       case 'services':
-        return (
-          <Placeholder
-            title="Servicios"
-            description="Gestión de servicios ofrecidos por el taller"
-            icon="🔧"
-          />
-        );
+        return <Servicios />;
       case 'customers':
         return (
           <Placeholder
