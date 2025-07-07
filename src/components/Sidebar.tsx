@@ -9,6 +9,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSection }) =>
   const menuItems = [
     { id: 'dashboard', name: 'Dashboard', icon: '📊' },
     { id: 'services', name: 'Servicios', icon: '🔧' },
+    { id: 'worksheets', name: 'Hojas de Trabajo', icon: '📋' },
     { id: 'customers', name: 'Cliente', icon: '👥' },
     { id: 'inventory', name: 'Inventario', icon: '📦' },
     { id: 'appointments', name: 'Citas', icon: '📅' },

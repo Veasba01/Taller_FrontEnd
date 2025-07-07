@@ -4,6 +4,7 @@ import Sidebar from './components/Sidebar';
 import Dashboard from './components/Dashboard';
 import Placeholder from './components/Placeholder';
 import { Servicios } from './components/Servicios';
+import { HojasTrabajo } from './components/HojasTrabajo';
 
 function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -14,6 +15,8 @@ function App() {
         return <Dashboard />;
       case 'services':
         return <Servicios />;
+      case 'worksheets':
+        return <HojasTrabajo />;
       case 'customers':
         return (
           <Placeholder
