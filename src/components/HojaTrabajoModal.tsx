@@ -142,9 +142,6 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
     const servicio = serviciosDisponibles.find(s => s.id === servicioId);
     if (!servicio) return;
 
-    console.log('Servicio encontrado:', servicio);
-    console.log('Precio original:', servicio.precio, 'Tipo:', typeof servicio.precio);
-
     // Verificar si ya está seleccionado
     if (serviciosSeleccionados.some(s => s.servicioId === servicioId)) {
       return;
@@ -157,7 +154,6 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
       nombre: servicio.nombre
     };
 
-    console.log('Nuevo servicio a agregar:', nuevoServicio);
     setServiciosSeleccionados(prev => [...prev, nuevoServicio]);
   };
 
@@ -178,10 +174,8 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
   const calcularTotal = () => {
     const total = serviciosSeleccionados.reduce((total, servicio) => {
       const precio = Number(servicio.precio) || 0;
-      console.log('Servicio:', servicio.nombre, 'Precio:', precio, 'Tipo:', typeof precio);
       return total + precio;
     }, 0);
-    console.log('Total calculado:', total);
     return total;
   };
 
@@ -198,10 +192,10 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="modal-container fixed inset-0 z-[9999] flex items-center justify-center p-4 modal-overlay" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+    <div className="modal-container fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50" 
+        className="absolute inset-0" 
         onClick={onClose}
       ></div>
 

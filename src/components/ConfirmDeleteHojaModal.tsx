@@ -27,10 +27,10 @@ export const ConfirmDeleteHojaModal: React.FC<ConfirmDeleteHojaModalProps> = ({
   };
 
   return (
-    <div className="modal-container fixed inset-0 z-[9999] flex items-center justify-center p-4 modal-overlay" style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}>
+    <div className="modal-container fixed inset-0 z-[9999] flex items-center justify-center p-4" style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}>
       {/* Overlay */}
       <div 
-        className="absolute inset-0 bg-black bg-opacity-50" 
+        className="absolute inset-0" 
         onClick={onClose}
       ></div>
 
