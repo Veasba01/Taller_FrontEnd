@@ -68,6 +68,18 @@ export interface UpdateHojaTrabajoDto {
   estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
 }
 
+export interface UpdateHojaTrabajoConServiciosDto {
+  cliente?: string;
+  vehiculo?: string;
+  placa?: string;
+  observaciones?: string;
+  estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
+  servicios?: Array<{
+    servicioId: number;
+    comentario?: string;
+  }>;
+}
+
 export interface AgregarServicioDto {
   servicioId: number;
   comentario?: string;

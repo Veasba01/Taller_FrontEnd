@@ -234,4 +234,26 @@ export class HojasTrabajoApi {
       throw error;
     }
   }
+
+  static async actualizarServicios(
+    hojaTrabajoId: number, 
+    servicios: Array<{ servicioId: number; comentario?: string }>
+  ): Promise<HojaTrabajo> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${hojaTrabajoId}/servicios`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ servicios }),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al actualizar servicios: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al actualizar servicios:', error);
+      throw error;
+    }
+  }
 }

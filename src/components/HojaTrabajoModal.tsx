@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import type { HojaTrabajo, CreateHojaTrabajoDto, Servicio } from '../types';
-import { ServiciosApi } from '../services/api';
+import type { HojaTrabajo, CreateHojaTrabajoDto, UpdateHojaTrabajoConServiciosDto, Servicio } from '../types';
+import { ServiciosApi, HojasTrabajoApi } from '../services/api';
 
 interface HojaTrabajoModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (hojaTrabajo: CreateHojaTrabajoDto) => void;
+  onSubmit: (hojaTrabajo: CreateHojaTrabajoDto | UpdateHojaTrabajoConServiciosDto) => void;
   hojaTrabajo?: HojaTrabajo;
   isLoading?: boolean;
 }
@@ -24,11 +24,12 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
   hojaTrabajo,
   isLoading = false
 }) => {
-  const [formData, setFormData] = useState<CreateHojaTrabajoDto>({
+  const [formData, setFormData] = useState<CreateHojaTrabajoDto & { estado?: string }>({
     cliente: '',
     vehiculo: '',
     placa: '',
     observaciones: '',
+    estado: 'pendiente',
     servicios: []
   });
 
@@ -50,6 +51,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         vehiculo: hojaTrabajo.vehiculo || '',
         placa: hojaTrabajo.placa || '',
         observaciones: hojaTrabajo.observaciones || '',
+        estado: hojaTrabajo.estado || 'pendiente',
         servicios: []
       });
 
@@ -68,6 +70,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         vehiculo: '',
         placa: '',
         observaciones: '',
+        estado: 'pendiente',
         servicios: []
       });
       setServiciosSeleccionados([]);
@@ -106,22 +109,63 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (validateForm()) {
-      const dataToSubmit = {
-        ...formData,
-        servicios: serviciosSeleccionados.map(s => ({
-          servicioId: s.servicioId,
-          comentario: s.comentario
-        }))
-      };
-      onSubmit(dataToSubmit);
+      try {
+        if (hojaTrabajo) {
+          // Si estamos editando una hoja existente, actualizar primero los datos básicos
+          const datosBasicos: UpdateHojaTrabajoConServiciosDto = {
+            cliente: formData.cliente,
+            vehiculo: formData.vehiculo,
+            placa: formData.placa,
+            observaciones: formData.observaciones,
+            servicios: serviciosSeleccionados.map(s => ({
+              servicioId: s.servicioId,
+              comentario: s.comentario
+            }))
+          };
+
+          // Actualizar los datos básicos
+          await HojasTrabajoApi.actualizar(hojaTrabajo.id, {
+            cliente: formData.cliente,
+            vehiculo: formData.vehiculo,
+            placa: formData.placa,
+            observaciones: formData.observaciones,
+            estado: formData.estado as 'pendiente' | 'en_proceso' | 'completado' | 'entregado'
+          });
+
+          // Actualizar los servicios masivamente
+          await HojasTrabajoApi.actualizarServicios(
+            hojaTrabajo.id,
+            serviciosSeleccionados.map(s => ({
+              servicioId: s.servicioId,
+              comentario: s.comentario
+            }))
+          );
+
+          // Notificar que se completó la actualización
+          onSubmit(datosBasicos);
+        } else {
+          // Para crear nueva hoja de trabajo
+          const dataToSubmit: CreateHojaTrabajoDto = {
+            ...formData,
+            servicios: serviciosSeleccionados.map(s => ({
+              servicioId: s.servicioId,
+              comentario: s.comentario
+            }))
+          };
+          onSubmit(dataToSubmit);
+        }
+      } catch (error) {
+        console.error('Error al procesar hoja de trabajo:', error);
+        // Aquí podrías mostrar un mensaje de error al usuario
+      }
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     
     setFormData(prev => ({
@@ -281,6 +325,27 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
                   <p className="mt-1 text-sm text-red-600">{errors.placa}</p>
                 )}
               </div>
+
+              {/* Estado - Solo mostrar al editar */}
+              {hojaTrabajo && (
+                <div>
+                  <label htmlFor="estado" className="block text-sm font-medium text-gray-700 mb-1">
+                    Estado
+                  </label>
+                  <select
+                    id="estado"
+                    name="estado"
+                    value={formData.estado}
+                    onChange={handleInputChange}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  >
+                    <option value="pendiente">Pendiente</option>
+                    <option value="en_proceso">En Proceso</option>
+                    <option value="completado">Completado</option>
+                    <option value="entregado">Entregado</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Observaciones */}

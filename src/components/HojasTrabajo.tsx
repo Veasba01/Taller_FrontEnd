@@ -54,19 +54,13 @@ export const HojasTrabajo: React.FC = () => {
     }
   };
 
-  const handleEdit = async (hojaTrabajoData: CreateHojaTrabajoDto) => {
+  const handleEdit = async () => {
     if (!selectedHojaTrabajo) return;
     
     try {
       setIsSubmitting(true);
-      // Para editar, solo actualizamos los datos básicos
-      const updateData = {
-        cliente: hojaTrabajoData.cliente,
-        vehiculo: hojaTrabajoData.vehiculo,
-        placa: hojaTrabajoData.placa,
-        observaciones: hojaTrabajoData.observaciones
-      };
-      await HojasTrabajoApi.actualizar(selectedHojaTrabajo.id, updateData);
+      // El modal ya maneja la actualización de datos básicos y servicios internamente
+      // Solo necesitamos recargar los datos
       await cargarHojasTrabajo();
       setIsEditModalOpen(false);
       setSelectedHojaTrabajo(undefined);
