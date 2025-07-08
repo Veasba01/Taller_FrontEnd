@@ -57,6 +57,7 @@ export interface CreateHojaTrabajoDto {
   servicios?: Array<{
     servicioId: number;
     comentario?: string;
+    precio?: number; // 🆕 Campo para precios personalizados
   }>;
 }
 
@@ -77,10 +78,12 @@ export interface UpdateHojaTrabajoConServiciosDto {
   servicios?: Array<{
     servicioId: number;
     comentario?: string;
+    precio?: number; // 🆕 Campo para precios personalizados
   }>;
 }
 
 export interface AgregarServicioDto {
   servicioId: number;
   comentario?: string;
+  precio?: number; // 🆕 Campo para precios personalizados
 }

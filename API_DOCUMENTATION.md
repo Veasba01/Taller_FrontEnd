@@ -68,6 +68,7 @@ interface CreateHojaTrabajoDto {
   servicios?: Array<{
     servicioId: number;
     comentario?: string;
+    precio?: number; // Precio personalizado (opcional, usa el precio del catálogo si no se especifica)
   }>;
 }
 ```
@@ -98,6 +99,7 @@ interface CreateServicioDto {
 interface AgregarServicioDto {
   servicioId: number;
   comentario?: string;
+  precio?: number; // Precio personalizado (opcional, usa el precio del catálogo si no se especifica)
 }
 ```
 
@@ -107,6 +109,7 @@ interface ActualizarServiciosDto {
   servicios: Array<{
     servicioId: number;
     comentario?: string;
+    precio?: number; // Precio personalizado (opcional, usa el precio del catálogo si no se especifica)
   }>;
 }
 ```

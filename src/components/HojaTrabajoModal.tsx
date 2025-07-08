@@ -121,10 +121,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
             vehiculo: formData.vehiculo,
             placa: formData.placa,
             observaciones: formData.observaciones,
-            servicios: serviciosSeleccionados.map(s => ({
-              servicioId: s.servicioId,
-              comentario: s.comentario
-            }))
+            servicios: serviciosSeleccionados.map(s => prepararServicioParaEnvio(s))
           };
 
           // Actualizar los datos básicos
@@ -139,10 +136,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
           // Actualizar los servicios masivamente
           await HojasTrabajoApi.actualizarServicios(
             hojaTrabajo.id,
-            serviciosSeleccionados.map(s => ({
-              servicioId: s.servicioId,
-              comentario: s.comentario
-            }))
+            serviciosSeleccionados.map(s => prepararServicioParaEnvio(s))
           );
 
           // Notificar que se completó la actualización
@@ -151,10 +145,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
           // Para crear nueva hoja de trabajo
           const dataToSubmit: CreateHojaTrabajoDto = {
             ...formData,
-            servicios: serviciosSeleccionados.map(s => ({
-              servicioId: s.servicioId,
-              comentario: s.comentario
-            }))
+            servicios: serviciosSeleccionados.map(s => prepararServicioParaEnvio(s))
           };
           onSubmit(dataToSubmit);
         }
@@ -215,12 +206,36 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
     );
   };
 
+  const actualizarPrecioServicio = (servicioId: number, precio: number) => {
+    setServiciosSeleccionados(prev => 
+      prev.map(s => 
+        s.servicioId === servicioId 
+          ? { ...s, precio: precio || 0 }
+          : s
+      )
+    );
+  };
+
   const calcularTotal = () => {
     const total = serviciosSeleccionados.reduce((total, servicio) => {
       const precio = Number(servicio.precio) || 0;
       return total + precio;
     }, 0);
     return total;
+  };
+
+  const calcularTotalOriginal = () => {
+    const totalOriginal = serviciosSeleccionados.reduce((total, servicio) => {
+      const precioOriginal = obtenerPrecioOriginal(servicio.servicioId);
+      return total + precioOriginal;
+    }, 0);
+    return totalOriginal;
+  };
+
+  const calcularDiferenciaPrecio = () => {
+    const totalActual = calcularTotal();
+    const totalOriginal = calcularTotalOriginal();
+    return totalActual - totalOriginal;
   };
 
   const formatCurrency = (amount: number) => {
@@ -231,6 +246,26 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
       currency: 'CRC',
       minimumFractionDigits: 0
     }).format(validAmount);
+  };
+
+  const obtenerPrecioOriginal = (servicioId: number): number => {
+    const servicio = serviciosDisponibles.find(s => s.id === servicioId);
+    return servicio ? Number(servicio.precio) : 0;
+  };
+
+  const prepararServicioParaEnvio = (servicio: ServicioSeleccionado) => {
+    const precioOriginal = obtenerPrecioOriginal(servicio.servicioId);
+    const datoServicio: { servicioId: number; comentario?: string; precio?: number } = {
+      servicioId: servicio.servicioId,
+      comentario: servicio.comentario
+    };
+
+    // Solo incluir precio si es diferente al precio original del catálogo
+    if (servicio.precio !== precioOriginal) {
+      datoServicio.precio = servicio.precio;
+    }
+
+    return datoServicio;
   };
 
   if (!isOpen) return null;
@@ -398,13 +433,44 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
               {/* Lista de servicios seleccionados */}
               <div className="space-y-3 max-h-64 overflow-y-auto">
                 {serviciosSeleccionados.map((servicio) => (
-                  <div key={servicio.servicioId} className="flex items-center space-x-3 p-3 bg-gray-50 rounded-md">
+                  <div key={servicio.servicioId} className={`flex items-center space-x-3 p-3 rounded-md border ${
+                    obtenerPrecioOriginal(servicio.servicioId) !== servicio.precio 
+                      ? 'bg-yellow-50 border-yellow-200' 
+                      : 'bg-gray-50 border-gray-200'
+                  }`}>
                     <div className="flex-1">
                       <div className="flex items-center justify-between mb-2">
                         <span className="font-medium text-gray-900">{servicio.nombre}</span>
-                        <span className="text-sm font-medium text-gray-900">
-                          {formatCurrency(servicio.precio)}
-                        </span>
+                        <div className="flex items-center space-x-2">
+                          <div className="text-right">
+                            {obtenerPrecioOriginal(servicio.servicioId) !== servicio.precio && (
+                              <div className="text-xs text-gray-400 line-through">
+                                Original: {formatCurrency(obtenerPrecioOriginal(servicio.servicioId))}
+                              </div>
+                            )}
+                            <div className="flex items-center space-x-1">
+                              <span className="text-sm text-gray-500">₡</span>
+                              <input
+                                type="number"
+                                value={servicio.precio}
+                                onChange={(e) => actualizarPrecioServicio(servicio.servicioId, Number(e.target.value))}
+                                className="w-20 px-1 py-1 text-sm border border-gray-200 rounded focus:outline-none focus:ring-1 focus:ring-blue-500 text-right"
+                                min="0"
+                                step="100"
+                              />
+                              {obtenerPrecioOriginal(servicio.servicioId) !== servicio.precio && (
+                                <button
+                                  type="button"
+                                  onClick={() => actualizarPrecioServicio(servicio.servicioId, obtenerPrecioOriginal(servicio.servicioId))}
+                                  className="text-xs text-blue-600 hover:text-blue-800 ml-1"
+                                  title="Restaurar precio original"
+                                >
+                                  ↻
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        </div>
                       </div>
                       <input
                         type="text"
@@ -430,12 +496,25 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
               {/* Total */}
               {serviciosSeleccionados.length > 0 && (
                 <div className="mt-4 p-3 bg-blue-50 rounded-md">
-                  <div className="flex justify-between items-center">
+                  <div className="flex justify-between items-center mb-2">
                     <span className="font-medium text-gray-900">Total estimado:</span>
                     <span className="text-lg font-bold text-blue-600">
                       {formatCurrency(calcularTotal())}
                     </span>
                   </div>
+                  {calcularDiferenciaPrecio() !== 0 && (
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-gray-600">
+                        {calcularDiferenciaPrecio() > 0 ? 'Incremento:' : 'Descuento:'}
+                      </span>
+                      <span className={`font-medium ${
+                        calcularDiferenciaPrecio() > 0 ? 'text-red-600' : 'text-green-600'
+                      }`}>
+                        {calcularDiferenciaPrecio() > 0 ? '+' : ''}
+                        {formatCurrency(calcularDiferenciaPrecio())}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

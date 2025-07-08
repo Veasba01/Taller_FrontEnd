@@ -237,7 +237,7 @@ export class HojasTrabajoApi {
 
   static async actualizarServicios(
     hojaTrabajoId: number, 
-    servicios: Array<{ servicioId: number; comentario?: string }>
+    servicios: Array<{ servicioId: number; comentario?: string; precio?: number }>
   ): Promise<HojaTrabajo> {
     try {
       const response = await fetch(`${this.baseUrl}/${hojaTrabajoId}/servicios`, {
