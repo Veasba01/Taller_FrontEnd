@@ -28,6 +28,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
     cliente: '',
     vehiculo: '',
     placa: '',
+    telefono: '',
     observaciones: '',
     estado: 'pendiente',
     servicios: []
@@ -50,6 +51,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         cliente: hojaTrabajo.cliente || '',
         vehiculo: hojaTrabajo.vehiculo || '',
         placa: hojaTrabajo.placa || '',
+        telefono: hojaTrabajo.telefono || '',
         observaciones: hojaTrabajo.observaciones || '',
         estado: hojaTrabajo.estado || 'pendiente',
         servicios: []
@@ -69,6 +71,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         cliente: '',
         vehiculo: '',
         placa: '',
+        telefono: '',
         observaciones: '',
         estado: 'pendiente',
         servicios: []
@@ -120,6 +123,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
             cliente: formData.cliente,
             vehiculo: formData.vehiculo,
             placa: formData.placa,
+            telefono: formData.telefono,
             observaciones: formData.observaciones,
             servicios: serviciosSeleccionados.map(s => prepararServicioParaEnvio(s))
           };
@@ -129,6 +133,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
             cliente: formData.cliente,
             vehiculo: formData.vehiculo,
             placa: formData.placa,
+            telefono: formData.telefono,
             observaciones: formData.observaciones,
             estado: formData.estado as 'pendiente' | 'en_proceso' | 'completado' | 'entregado'
           });
@@ -359,6 +364,22 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
                 {errors.placa && (
                   <p className="mt-1 text-sm text-red-600">{errors.placa}</p>
                 )}
+              </div>
+
+              {/* Teléfono */}
+              <div>
+                <label htmlFor="telefono" className="block text-sm font-medium text-gray-700 mb-1">
+                  Teléfono
+                </label>
+                <input
+                  type="tel"
+                  id="telefono"
+                  name="telefono"
+                  value={formData.telefono}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Número de teléfono"
+                />
               </div>
 
               {/* Estado - Solo mostrar al editar */}

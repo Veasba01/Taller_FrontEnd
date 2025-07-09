@@ -123,7 +123,8 @@ export const HojasTrabajo: React.FC = () => {
     const matchesSearch = 
       hoja.cliente?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       hoja.vehiculo?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      hoja.placa?.toLowerCase().includes(searchTerm.toLowerCase());
+      hoja.placa?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      hoja.telefono?.toLowerCase().includes(searchTerm.toLowerCase());
     
     const matchesEstado = estadoFilter === 'todos' || hoja.estado === estadoFilter;
     
@@ -196,7 +197,7 @@ export const HojasTrabajo: React.FC = () => {
           <div className="flex-1">
             <input
               type="text"
-              placeholder="Buscar por cliente, vehículo o placa..."
+              placeholder="Buscar por cliente, vehículo, placa o teléfono..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
@@ -233,6 +234,9 @@ export const HojasTrabajo: React.FC = () => {
                 Placa
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Teléfono
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Estado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -252,7 +256,7 @@ export const HojasTrabajo: React.FC = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {hojasFiltradas.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                   {searchTerm || estadoFilter !== 'todos' 
                     ? 'No se encontraron hojas de trabajo que coincidan con los filtros' 
                     : 'No hay hojas de trabajo disponibles'
@@ -272,6 +276,9 @@ export const HojasTrabajo: React.FC = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="text-sm text-gray-900">{hoja.placa}</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{hoja.telefono || '-'}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <select

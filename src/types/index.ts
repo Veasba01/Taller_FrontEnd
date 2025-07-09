@@ -29,6 +29,7 @@ export interface HojaTrabajo {
   cliente?: string;
   vehiculo?: string;
   placa?: string;
+  telefono?: string;
   observaciones?: string;
   estado: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
   total: number;
@@ -53,6 +54,7 @@ export interface CreateHojaTrabajoDto {
   cliente?: string;
   vehiculo?: string;
   placa?: string;
+  telefono?: string;
   observaciones?: string;
   servicios?: Array<{
     servicioId: number;
@@ -65,6 +67,7 @@ export interface UpdateHojaTrabajoDto {
   cliente?: string;
   vehiculo?: string;
   placa?: string;
+  telefono?: string;
   observaciones?: string;
   estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
 }
@@ -73,6 +76,7 @@ export interface UpdateHojaTrabajoConServiciosDto {
   cliente?: string;
   vehiculo?: string;
   placa?: string;
+  telefono?: string;
   observaciones?: string;
   estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
   servicios?: Array<{
