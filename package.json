@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test:api": "node src/utils/dashboard-api-test.js"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",

@@ -1,4 +1,21 @@
-import type { Servicio, CreateServicioDto, UpdateServicioDto, HojaTrabajo, CreateHojaTrabajoDto, UpdateHojaTrabajoDto, AgregarServicioDto, HojaTrabajoDetalle } from '../types';
+import type { 
+  Servicio, 
+  CreateServicioDto, 
+  UpdateServicioDto, 
+  HojaTrabajo, 
+  CreateHojaTrabajoDto, 
+  UpdateHojaTrabajoDto, 
+  AgregarServicioDto, 
+  HojaTrabajoDetalle,
+  IngresosDiaResponse,
+  ServiciosCompletadosResponse,
+  ClientesAtendidosResponse,
+  ServiciosPendientesResponse,
+  IngresosPorSemanaResponse,
+  IngresosPorMesResponse,
+  ResumenSemanaResponse,
+  EstadisticasGeneralesResponse
+} from '../types';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -253,6 +270,122 @@ export class HojasTrabajoApi {
       return await response.json();
     } catch (error) {
       console.error('Error al actualizar servicios:', error);
+      throw error;
+    }
+  }
+}
+
+// Dashboard API
+export class DashboardApi {
+  private static baseUrl = `${API_BASE_URL}/dashboard`;
+
+  static async obtenerIngresosDia(fecha?: string): Promise<IngresosDiaResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/ingresos-dia?fecha=${fecha}` : `${this.baseUrl}/ingresos-dia`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener ingresos del día: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener ingresos del día:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerServiciosCompletadosSemana(fecha?: string): Promise<ServiciosCompletadosResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/servicios-completados-semana?fecha=${fecha}` : `${this.baseUrl}/servicios-completados-semana`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener servicios completados: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener servicios completados:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerClientesAtendidosSemana(fecha?: string): Promise<ClientesAtendidosResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/clientes-atendidos-semana?fecha=${fecha}` : `${this.baseUrl}/clientes-atendidos-semana`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener clientes atendidos: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener clientes atendidos:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerServiciosPendientesDia(fecha?: string): Promise<ServiciosPendientesResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/servicios-pendientes-dia?fecha=${fecha}` : `${this.baseUrl}/servicios-pendientes-dia`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener servicios pendientes: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener servicios pendientes:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerIngresosPorSemana(fecha?: string): Promise<IngresosPorSemanaResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/ingresos-por-semana?fecha=${fecha}` : `${this.baseUrl}/ingresos-por-semana`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener ingresos por semana: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener ingresos por semana:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerIngresosPorMes(fecha?: string): Promise<IngresosPorMesResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/ingresos-por-mes?fecha=${fecha}` : `${this.baseUrl}/ingresos-por-mes`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener ingresos por mes: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener ingresos por mes:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerResumenSemana(fecha?: string): Promise<ResumenSemanaResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/resumen-semana?fecha=${fecha}` : `${this.baseUrl}/resumen-semana`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener resumen de semana: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener resumen de semana:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerEstadisticasGenerales(): Promise<EstadisticasGeneralesResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/estadisticas-generales`);
+      if (!response.ok) {
+        throw new Error(`Error al obtener estadísticas generales: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener estadísticas generales:', error);
       throw error;
     }
   }

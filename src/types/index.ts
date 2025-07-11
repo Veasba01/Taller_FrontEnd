@@ -91,3 +91,120 @@ export interface AgregarServicioDto {
   comentario?: string;
   precio?: number; // 🆕 Campo para precios personalizados
 }
+
+// Dashboard Types
+export interface IngresosDiaResponse {
+  fecha: string;
+  ingresos: number;
+  cantidadTrabajos: number;
+  trabajos: Array<{
+    id: number;
+    cliente: string;
+    vehiculo: string;
+    total: number;
+    estado: string;
+  }>;
+}
+
+export interface ServiciosCompletadosResponse {
+  semana: string;
+  totalServicios: number;
+  servicios: Array<{
+    nombre: string;
+    cantidad: number;
+    ingresos: number;
+  }>;
+}
+
+export interface ClientesAtendidosResponse {
+  semana: string;
+  totalClientes: number;
+  totalTrabajos: number;
+  clientes: Array<{
+    nombre: string;
+    cantidadTrabajos: number;
+    totalGastado: number;
+  }>;
+}
+
+export interface ServiciosPendientesResponse {
+  fecha: string;
+  totalPendientes: number;
+  trabajos: Array<{
+    id: number;
+    cliente: string;
+    vehiculo: string;
+    placa: string;
+    estado: string;
+    servicios: Array<{
+      nombre: string;
+      precio: number;
+      completado: boolean;
+    }>;
+  }>;
+}
+
+export interface IngresosPorSemanaResponse {
+  semana: string;
+  totalSemana: number;
+  ingresosPorDia: Array<{
+    fecha: string;
+    dia: string;
+    ingresos: number;
+    cantidadTrabajos: number;
+  }>;
+}
+
+export interface IngresosPorMesResponse {
+  mes: string;
+  año: number;
+  totalMes: number;
+  ingresosPorDia: Array<{
+    fecha: string;
+    dia: number;
+    ingresos: number;
+    cantidadTrabajos: number;
+  }>;
+}
+
+export interface ResumenSemanaResponse {
+  semana: string;
+  resumen: {
+    ingresosTotales: number;
+    serviciosCompletados: number;
+    clientesAtendidos: number;
+    trabajosRealizados: number;
+  };
+  detalles: {
+    ingresosPorDia: Array<{
+      fecha: string;
+      dia: string;
+      ingresos: number;
+      cantidadTrabajos: number;
+    }>;
+    serviciosMasRealizados: Array<{
+      nombre: string;
+      cantidad: number;
+      ingresos: number;
+    }>;
+    clientesConMasTrabajos: Array<{
+      nombre: string;
+      cantidadTrabajos: number;
+      totalGastado: number;
+    }>;
+  };
+}
+
+export interface EstadisticasGeneralesResponse {
+  totales: {
+    trabajos: number;
+    clientes: number;
+    servicios: number;
+    ingresos: number;
+  };
+  estados: {
+    completados: number;
+    pendientes: number;
+    porcentajeCompletados: string;
+  };
+}
