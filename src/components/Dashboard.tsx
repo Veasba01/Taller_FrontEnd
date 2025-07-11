@@ -203,10 +203,10 @@ const Dashboard: React.FC = () => {
                 
                 return (
                   <div key={index} className="flex items-center justify-between">
-                    <div className="flex items-center space-x-3">
-                      <span className="text-sm font-medium text-gray-600 w-8">{stat.dia}</span>
+                    <div className="flex items-center space-x-4">
+                      <span className="text-sm font-medium text-gray-600 w-14 flex-shrink-0">{stat.dia}</span>
                       <div className="flex-1">
-                        <div className="bg-gray-200 rounded-full h-2 w-32">
+                        <div className="bg-gray-200 rounded-full h-2 w-40">
                           <div 
                             className="bg-blue-600 h-2 rounded-full" 
                             style={{ width: `${percentage}%` }}
@@ -243,7 +243,7 @@ const Dashboard: React.FC = () => {
                     </div>
                     <div className="text-right">
                       <p className="font-semibold text-gray-900">{formatCurrency(trabajo.total)}</p>
-                      <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      {/* <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
                         trabajo.estado === 'completado' 
                           ? 'bg-green-100 text-green-800'
                           : trabajo.estado === 'en_proceso'
@@ -252,7 +252,7 @@ const Dashboard: React.FC = () => {
                       }`}>
                         {trabajo.estado === 'completado' ? 'Completado' : 
                          trabajo.estado === 'en_proceso' ? 'En proceso' : 'Pendiente'}
-                      </span>
+                      </span> */}
                     </div>
                   </div>
                 </div>
@@ -315,12 +315,12 @@ const Dashboard: React.FC = () => {
               </p>
               <p className="text-gray-600">Ingresos totales</p>
             </div>
-            <div className="text-center">
+            {/* <div className="text-center">
               <p className="text-3xl font-bold text-blue-600">
                 {resumenSemana.resumen.serviciosCompletados}
               </p>
               <p className="text-gray-600">Servicios completados</p>
-            </div>
+            </div> */}
             <div className="text-center">
               <p className="text-3xl font-bold text-purple-600">
                 {resumenSemana.resumen.clientesAtendidos}
