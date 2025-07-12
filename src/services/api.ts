@@ -15,7 +15,13 @@ import type {
   IngresosPorMesResponse,
   ResumenSemanaResponse,
   EstadisticasGeneralesResponse,
-  IngresosPorMetodoPagoResponse
+  IngresosPorMetodoPagoResponse,
+  Gasto,
+  CreateGastoDto,
+  UpdateGastoDto,
+  EstadisticasGastosResponse,
+  GastosDelDiaResponse,
+  ResumenFinancieroResponse
 } from '../types';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -402,6 +408,205 @@ export class DashboardApi {
     } catch (error) {
       console.error('Error al obtener ingresos por método de pago:', error);
       throw error;
+    }
+  }
+
+  static async obtenerGastosDelDia(fecha?: string): Promise<GastosDelDiaResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/gastos-dia?fecha=${fecha}` : `${this.baseUrl}/gastos-dia`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener gastos del día: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener gastos del día:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerResumenFinanciero(fecha?: string): Promise<ResumenFinancieroResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/resumen-financiero?fecha=${fecha}` : `${this.baseUrl}/resumen-financiero`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener resumen financiero: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener resumen financiero:', error);
+      throw error;
+    }
+  }
+}
+
+export class GastosApi {
+  private static baseUrl = `${API_BASE_URL}/gastos`;
+
+  // CRUD Básico
+  static async obtenerTodos(): Promise<Gasto[]> {
+    try {
+      const response = await fetch(this.baseUrl);
+      if (!response.ok) {
+        throw new Error(`Error al obtener gastos: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener gastos:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerPorId(id: number): Promise<Gasto> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`);
+      if (!response.ok) {
+        throw new Error(`Error al obtener gasto: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener gasto:', error);
+      throw error;
+    }
+  }
+
+  static async crear(gasto: CreateGastoDto): Promise<Gasto> {
+    try {
+      const response = await fetch(this.baseUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gasto),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al crear gasto: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al crear gasto:', error);
+      throw error;
+    }
+  }
+
+  static async actualizar(id: number, gasto: UpdateGastoDto): Promise<Gasto> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(gasto),
+      });
+      if (!response.ok) {
+        throw new Error(`Error al actualizar gasto: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al actualizar gasto:', error);
+      throw error;
+    }
+  }
+
+  static async eliminar(id: number): Promise<void> {
+    try {
+      const response = await fetch(`${this.baseUrl}/${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) {
+        throw new Error(`Error al eliminar gasto: ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Error al eliminar gasto:', error);
+      throw error;
+    }
+  }
+
+  // Consultas Avanzadas
+  static async obtenerEstadisticas(): Promise<EstadisticasGastosResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/estadisticas`);
+      if (!response.ok) {
+        throw new Error(`Error al obtener estadísticas: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener estadísticas:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerPorPeriodo(fechaInicio: string, fechaFin: string): Promise<Gasto[]> {
+    try {
+      const url = `${this.baseUrl}/periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener gastos por período: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener gastos por período:', error);
+      // Fallback: obtener todos los gastos y filtrar por fecha en el frontend
+      try {
+        const todosGastos = await this.obtenerTodos();
+        const start = new Date(fechaInicio);
+        const end = new Date(fechaFin);
+        end.setHours(23, 59, 59, 999); // Incluir todo el día final
+        
+        return todosGastos.filter(gasto => {
+          const fechaGasto = new Date(gasto.created_at);
+          return fechaGasto >= start && fechaGasto <= end;
+        });
+      } catch (fallbackError) {
+        console.error('Error en fallback obtenerPorPeriodo:', fallbackError);
+        throw error;
+      }
+    }
+  }
+
+  static async obtenerTotalPorPeriodo(fechaInicio: string, fechaFin: string): Promise<{ total: number }> {
+    try {
+      const url = `${this.baseUrl}/total-periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener total por período: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener total por período:', error);
+      // Fallback: calcular desde los gastos del período
+      try {
+        const gastos = await this.obtenerPorPeriodo(fechaInicio, fechaFin);
+        const total = gastos.reduce((sum, gasto) => sum + (gasto.monto || 0), 0);
+        return { total };
+      } catch (fallbackError) {
+        console.error('Error en fallback obtenerTotalPorPeriodo:', fallbackError);
+        return { total: 0 };
+      }
+    }
+  }
+
+  static async obtenerDelMes(año: number, mes: number): Promise<Gasto[]> {
+    try {
+      const url = `${this.baseUrl}/mes?año=${año}&mes=${mes}`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener gastos del mes: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener gastos del mes:', error);
+      // Fallback: obtener todos los gastos y filtrar por mes en el frontend
+      try {
+        const todosGastos = await this.obtenerTodos();
+        return todosGastos.filter(gasto => {
+          const fechaGasto = new Date(gasto.created_at);
+          return fechaGasto.getFullYear() === año && fechaGasto.getMonth() === mes - 1; // mes - 1 porque getMonth() es 0-based
+        });
+      } catch (fallbackError) {
+        console.error('Error en fallback obtenerDelMes:', fallbackError);
+        throw error;
+      }
     }
   }
 }

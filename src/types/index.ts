@@ -226,3 +226,73 @@ export interface IngresosPorMetodoPagoResponse {
   metodos: MetodoPagoResponse[];
   totalIngresos: number;
 }
+
+// Interfaces para Gastos
+export interface Gasto {
+  id: number;
+  monto: number;
+  comentario?: string;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface CreateGastoDto {
+  monto: number;
+  comentario?: string;
+}
+
+export interface UpdateGastoDto {
+  monto?: number;
+  comentario?: string;
+}
+
+export interface GastosPorPeriodoDto {
+  fechaInicio: string;
+  fechaFin: string;
+}
+
+export interface EstadisticasGastosResponse {
+  totalGastos: number;
+  cantidadGastos: number;
+  gastoPromedio: number;
+  gastoMayor: number;
+  gastoMenor: number;
+}
+
+export interface GastosDelDiaResponse {
+  fecha: string;
+  totalGastos: number;
+  cantidadGastos: number;
+  gastos: Gasto[];
+}
+
+export interface ResumenFinancieroResponse {
+  fecha: string;
+  ingresos: number;
+  gastos: number;
+  utilidad: number;
+  margenUtilidad: number;
+}
+
+export interface GastosPorSemanaResponse {
+  semana: {
+    inicio: string;
+    fin: string;
+    numeroSemana: number;
+    año: number;
+  };
+  totalGastos: number;
+  cantidadGastos: number;
+  gastoPromedio: number;
+  gastosPorDia: Array<{
+    fecha: string;
+    totalGastos: number;
+    cantidadGastos: number;
+    gastos: Gasto[];
+  }>;
+}
+
+export interface FiltroSemanaDto {
+  año: number;
+  semana: number;
+}

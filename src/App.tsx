@@ -5,6 +5,8 @@ import Dashboard from './components/Dashboard';
 import Placeholder from './components/Placeholder';
 import { Servicios } from './components/Servicios';
 import { HojasTrabajo } from './components/HojasTrabajo';
+import { Ingresos } from './components/Ingresos';
+import { Gastos } from './components/Gastos';
 
 function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -17,6 +19,10 @@ function App() {
         return <Servicios />;
       case 'worksheets':
         return <HojasTrabajo />;
+      case 'gastos':
+        return <Gastos />;
+      case 'ingresos':
+        return <Ingresos />;
       case 'customers':
         return (
           <Placeholder

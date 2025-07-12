@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { DashboardApi } from '../services/api';
-import { MetodosPagoStats } from './MetodosPagoStats';
+import { GastosDelDiaCard, ResumenFinancieroCard } from './GastosStats';
 import type { 
   IngresosDiaResponse, 
   ServiciosPendientesResponse, 
@@ -338,9 +338,10 @@ const Dashboard: React.FC = () => {
         </div>
       )}
 
-      {/* Estadísticas de métodos de pago */}
-      <div className="mb-8">
-        <MetodosPagoStats />
+      {/* Información financiera */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <GastosDelDiaCard />
+        <ResumenFinancieroCard />
       </div>
     </div>
   );
