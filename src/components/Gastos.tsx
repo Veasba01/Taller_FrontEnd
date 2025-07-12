@@ -1,12 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import type { Gasto, CreateGastoDto, UpdateGastoDto, EstadisticasGastosResponse } from '../types';
+import type { Gasto, CreateGastoDto, UpdateGastoDto } from '../types';
+//, EstadisticasGastosResponse
 import { GastosApi } from '../services/api';
 import { GastoModal } from './GastoModal';
 import { ConfirmDeleteGastoModal } from './ConfirmDeleteGastoModal';
 
 export const Gastos: React.FC = () => {
   const [gastos, setGastos] = useState<Gasto[]>([]);
-  const [estadisticas, setEstadisticas] = useState<EstadisticasGastosResponse | null>(null);
+  /* const [estadisticas, setEstadisticas] = useState<EstadisticasGastosResponse | null>(null); */
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
@@ -26,9 +27,24 @@ export const Gastos: React.FC = () => {
   const [viewMode, setViewMode] = useState<'todos' | 'periodo' | 'mes'>('todos');
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedMonth, setSelectedMonth] = useState(new Date().getMonth() + 1);
-  const [startDate, setStartDate] = useState(new Date().toISOString().split('T')[0]);
-  const [endDate, setEndDate] = useState(new Date().toISOString().split('T')[0]);
-  const [periodTotal, setPeriodTotal] = useState<number | null>(null);
+  const [startDate, setStartDate] = useState(getTodayDateString());
+  const [endDate, setEndDate] = useState(getTodayDateString());
+  const [periodTotal, setPeriodTotal] = useState<number>(0);
+
+  // Función helper para obtener la fecha actual en formato YYYY-MM-DD sin problemas de zona horaria
+  function getTodayDateString(): string {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }
+
+  // Función helper para crear una fecha desde un string sin problemas de zona horaria
+  function createDateFromString(dateString: string): Date {
+    const [year, month, day] = dateString.split('-');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  }
 
   // Función para cargar los datos según la vista seleccionada
   const cargarDatos = useCallback(async () => {
@@ -36,13 +52,18 @@ export const Gastos: React.FC = () => {
       setLoading(true);
       setError(null);
       
+      // Resetear el total del período cuando se cambia de vista
+      if (viewMode !== 'periodo') {
+        setPeriodTotal(0);
+      }
+      
       // Siempre cargar estadísticas generales
-      try {
+      /* try {
         const estadisticasData = await GastosApi.obtenerEstadisticas();
         setEstadisticas(estadisticasData);
       } catch (err) {
         console.error('Error al cargar estadísticas:', err);
-      }
+      } */
       
       // Cargar datos según la vista
       if (viewMode === 'todos') {
@@ -52,15 +73,45 @@ export const Gastos: React.FC = () => {
         const gastosData = await GastosApi.obtenerPorPeriodo(startDate, endDate);
         setGastos(gastosData);
         
-        // Obtener total del período
+        // Calcular total del período directamente de los gastos obtenidos
+        const calculatedTotal = gastosData.reduce((sum, gasto) => {
+          const montoNumerico = typeof gasto.monto === 'string' ? parseFloat(gasto.monto) : gasto.monto;
+          return sum + (montoNumerico || 0);
+        }, 0);
+        console.log('Gastos del período:', gastosData.length, 'Total calculado:', calculatedTotal);
+        console.log('Detalle de gastos:', gastosData.map(g => ({ id: g.id, monto: g.monto, tipo: typeof g.monto })));
+        setPeriodTotal(calculatedTotal);
+        
+        // Intentar obtener total del backend como verificación
         try {
           const totalData = await GastosApi.obtenerTotalPorPeriodo(startDate, endDate);
-          setPeriodTotal(totalData.total);
+          console.log('Total del backend:', totalData);
+          
+          // El backend puede devolver diferentes estructuras
+          let backendTotal = 0;
+          if (totalData) {
+            const data = totalData as { total?: number | string; totalGastos?: number | string };
+            if (typeof data.total === 'number') {
+              backendTotal = data.total;
+            } else if (typeof data.totalGastos === 'number') {
+              backendTotal = data.totalGastos;
+            } else if (typeof data.total === 'string') {
+              backendTotal = parseFloat(data.total);
+            } else if (typeof data.totalGastos === 'string') {
+              backendTotal = parseFloat(data.totalGastos);
+            }
+          }
+          
+          if (!isNaN(backendTotal) && backendTotal > 0) {
+            console.log('Usando total del backend:', backendTotal);
+            setPeriodTotal(backendTotal);
+          } else {
+            console.log('Usando total calculado localmente:', calculatedTotal);
+          }
         } catch (err) {
-          console.error('Error al obtener total del período:', err);
-          // Calcular total localmente
-          const total = gastosData.reduce((sum, gasto) => sum + gasto.monto, 0);
-          setPeriodTotal(total);
+          console.error('Error al obtener total del período desde backend:', err);
+          // Mantener el total calculado localmente
+          console.log('Usando total calculado localmente (fallback):', calculatedTotal);
         }
       } else if (viewMode === 'mes') {
         const gastosData = await GastosApi.obtenerDelMes(selectedYear, selectedMonth);
@@ -141,6 +192,11 @@ export const Gastos: React.FC = () => {
 
   // Función para formatear fecha
   const formatDate = (date: Date | string) => {
+    if (typeof date === 'string') {
+      // Si es una cadena, la parseamos correctamente evitando problemas de zona horaria
+      const dateObj = createDateFromString(date);
+      return dateObj.toLocaleDateString('es-CR');
+    }
     return new Date(date).toLocaleDateString('es-CR');
   };
 
@@ -195,7 +251,7 @@ export const Gastos: React.FC = () => {
       )}
 
       {/* Estadísticas generales */}
-      {estadisticas && (
+      {/* {estadisticas && (
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
           <div className="bg-white p-4 rounded-lg shadow">
             <h3 className="text-sm font-medium text-gray-500">Total Gastos</h3>
@@ -218,7 +274,7 @@ export const Gastos: React.FC = () => {
             <p className="text-2xl font-bold text-gray-900">{formatCurrency(estadisticas.gastoMenor)}</p>
           </div>
         </div>
-      )}
+      )} */}
 
       {/* Filtros y vistas */}
       <div className="bg-white p-4 rounded-lg shadow mb-6">
@@ -311,7 +367,7 @@ export const Gastos: React.FC = () => {
       </div>
 
       {/* Información del período */}
-      {viewMode === 'periodo' && periodTotal !== null && (
+      {viewMode === 'periodo' && (
         <div className="bg-white p-4 rounded-lg shadow mb-6">
           <h3 className="text-lg font-medium text-gray-900 mb-2">
             Período del {formatDate(startDate)} al {formatDate(endDate)}
@@ -319,7 +375,9 @@ export const Gastos: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <h4 className="text-sm font-medium text-gray-500">Total del período</h4>
-              <p className="text-2xl font-bold text-gray-900">{formatCurrency(periodTotal)}</p>
+              <p className="text-2xl font-bold text-gray-900">
+                {formatCurrency(periodTotal)}
+              </p>
             </div>
             <div>
               <h4 className="text-sm font-medium text-gray-500">Cantidad de gastos</h4>

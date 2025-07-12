@@ -6,17 +6,33 @@ export const MetodosPagoStats: React.FC = () => {
   const [estadisticas, setEstadisticas] = useState<IngresosPorMetodoPagoResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [fechaSeleccionada, setFechaSeleccionada] = useState('');
+
+  // Función helper para crear una fecha desde un string sin problemas de zona horaria
+  function createDateFromString(dateString: string): Date {
+    const [year, month, day] = dateString.split('-');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  }
+
+  // Función para formatear fecha
+  const formatDate = (date: Date | string) => {
+    if (typeof date === 'string') {
+      // Si es una cadena, la parseamos correctamente evitando problemas de zona horaria
+      const dateObj = createDateFromString(date);
+      return dateObj.toLocaleDateString('es-CR');
+    }
+    return new Date(date).toLocaleDateString('es-CR');
+  };
 
   useEffect(() => {
     cargarEstadisticas();
   }, []);
 
-  const cargarEstadisticas = async (fecha?: string) => {
+  const cargarEstadisticas = async () => {
     try {
       setLoading(true);
       setError(null);
-      const data = await DashboardApi.obtenerIngresosPorMetodoPago(fecha);
+      // Siempre cargar datos del día de hoy (sin pasar fecha)
+      const data = await DashboardApi.obtenerIngresosPorMetodoPago();
       setEstadisticas(data);
     } catch (err) {
       setError('Error al cargar estadísticas de métodos de pago');
@@ -24,11 +40,6 @@ export const MetodosPagoStats: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleFechaChange = (fecha: string) => {
-    setFechaSeleccionada(fecha);
-    cargarEstadisticas(fecha || undefined);
   };
 
   const formatCurrency = (amount: number) => {
@@ -102,18 +113,13 @@ export const MetodosPagoStats: React.FC = () => {
         <h3 className="text-lg font-semibold text-gray-900 mb-4 sm:mb-0">
           Ingresos por Método de Pago
         </h3>
-        <div className="flex items-center space-x-4">
-          <input
-            type="date"
-            value={fechaSeleccionada}
-            onChange={(e) => handleFechaChange(e.target.value)}
-            className="px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm"
-          />
+        <div className="flex items-center space-x-2">
+          <span className="text-sm text-gray-500">Hoy</span>
           <button
-            onClick={() => handleFechaChange('')}
-            className="px-3 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200 text-sm"
+            onClick={cargarEstadisticas}
+            className="px-2 py-1 bg-blue-100 text-blue-700 rounded-md hover:bg-blue-200 text-sm"
           >
-            Hoy
+            Actualizar
           </button>
         </div>
       </div>
@@ -123,7 +129,7 @@ export const MetodosPagoStats: React.FC = () => {
           <div className="mb-6">
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Fecha: {new Date(estadisticas.fecha).toLocaleDateString('es-CR')}
+                Fecha: {formatDate(estadisticas.fecha)}
               </p>
               <p className="text-2xl font-bold text-gray-900 mt-2">
                 {formatCurrency(estadisticas.totalIngresos)}

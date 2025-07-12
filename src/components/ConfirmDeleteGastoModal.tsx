@@ -18,6 +18,22 @@ export const ConfirmDeleteGastoModal: React.FC<ConfirmDeleteGastoModalProps> = (
 }) => {
   if (!isOpen || !gasto) return null;
 
+  // Función helper para crear una fecha desde un string sin problemas de zona horaria
+  function createDateFromString(dateString: string): Date {
+    const [year, month, day] = dateString.split('-');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  }
+
+  // Función para formatear fecha
+  const formatDate = (date: Date | string) => {
+    if (typeof date === 'string') {
+      // Si es una cadena, la parseamos correctamente evitando problemas de zona horaria
+      const dateObj = createDateFromString(date);
+      return dateObj.toLocaleDateString('es-CR');
+    }
+    return new Date(date).toLocaleDateString('es-CR');
+  };
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('es-CR', {
       style: 'currency',
@@ -81,7 +97,7 @@ export const ConfirmDeleteGastoModal: React.FC<ConfirmDeleteGastoModalProps> = (
             <div className="flex justify-between items-center mt-2">
               <span className="text-sm font-medium text-gray-700">Fecha:</span>
               <span className="text-sm text-gray-600">
-                {new Date(gasto.created_at).toLocaleDateString('es-CR')}
+                {formatDate(gasto.created_at)}
               </span>
             </div>
           </div>

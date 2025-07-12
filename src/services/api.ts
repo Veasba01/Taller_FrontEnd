@@ -549,8 +549,11 @@ export class GastosApi {
       // Fallback: obtener todos los gastos y filtrar por fecha en el frontend
       try {
         const todosGastos = await this.obtenerTodos();
-        const start = new Date(fechaInicio);
-        const end = new Date(fechaFin);
+        // Crear fechas sin problemas de zona horaria
+        const [startYear, startMonth, startDay] = fechaInicio.split('-');
+        const [endYear, endMonth, endDay] = fechaFin.split('-');
+        const start = new Date(parseInt(startYear), parseInt(startMonth) - 1, parseInt(startDay));
+        const end = new Date(parseInt(endYear), parseInt(endMonth) - 1, parseInt(endDay));
         end.setHours(23, 59, 59, 999); // Incluir todo el día final
         
         return todosGastos.filter(gasto => {

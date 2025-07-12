@@ -151,6 +151,22 @@ export const HojasTrabajo: React.FC = () => {
     }).format(amount);
   };
 
+  // Función helper para crear una fecha desde un string sin problemas de zona horaria
+  function createDateFromString(dateString: string): Date {
+    const [year, month, day] = dateString.split('-');
+    return new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  }
+
+  // Función para formatear fecha
+  const formatDate = (date: Date | string) => {
+    if (typeof date === 'string') {
+      // Si es una cadena, la parseamos correctamente evitando problemas de zona horaria
+      const dateObj = createDateFromString(date);
+      return dateObj.toLocaleDateString('es-CR');
+    }
+    return new Date(date).toLocaleDateString('es-CR');
+  };
+
   const getEstadoColor = (estado: string) => {
     switch (estado) {
       case 'pendiente':
@@ -351,7 +367,7 @@ export const HojasTrabajo: React.FC = () => {
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    {new Date(hoja.created_at).toLocaleDateString('es-CR')}
+                    {formatDate(hoja.created_at)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                     <button
