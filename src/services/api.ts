@@ -14,7 +14,8 @@ import type {
   IngresosPorSemanaResponse,
   IngresosPorMesResponse,
   ResumenSemanaResponse,
-  EstadisticasGeneralesResponse
+  EstadisticasGeneralesResponse,
+  IngresosPorMetodoPagoResponse
 } from '../types';
 
 const API_BASE_URL = 'http://localhost:3000';
@@ -386,6 +387,20 @@ export class DashboardApi {
       return await response.json();
     } catch (error) {
       console.error('Error al obtener estadísticas generales:', error);
+      throw error;
+    }
+  }
+
+  static async obtenerIngresosPorMetodoPago(fecha?: string): Promise<IngresosPorMetodoPagoResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/ingresos-por-metodo-pago?fecha=${fecha}` : `${this.baseUrl}/ingresos-por-metodo-pago`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener ingresos por método de pago: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener ingresos por método de pago:', error);
       throw error;
     }
   }

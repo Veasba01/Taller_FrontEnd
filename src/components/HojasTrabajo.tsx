@@ -101,6 +101,18 @@ export const HojasTrabajo: React.FC = () => {
     }
   };
 
+  const handleUpdateMetodoPago = async (hojaTrabajoId: number, nuevoMetodo: string) => {
+    try {
+      await HojasTrabajoApi.actualizar(hojaTrabajoId, { 
+        metodo_pago: nuevoMetodo as 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo' 
+      });
+      await cargarHojasTrabajo();
+    } catch (err) {
+      setError('Error al actualizar el método de pago');
+      console.error(err);
+    }
+  };
+
   const openEditModal = (hojaTrabajo: HojaTrabajo) => {
     setSelectedHojaTrabajo(hojaTrabajo);
     setIsEditModalOpen(true);
@@ -148,7 +160,22 @@ export const HojasTrabajo: React.FC = () => {
       case 'completado':
         return 'bg-green-100 text-green-800';
       case 'entregado':
+        return 'bg-purple-100 text-purple-800';
+      default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getMetodoPagoColor = (metodo: string) => {
+    switch (metodo) {
+      case 'pendiente':
+        return 'bg-gray-100 text-gray-800';
+      case 'sinpe':
+        return 'bg-orange-100 text-orange-800';
+      case 'tarjeta':
+        return 'bg-blue-100 text-blue-800';
+      case 'efectivo':
+        return 'bg-green-100 text-green-800';
       default:
         return 'bg-gray-100 text-gray-800';
     }
@@ -240,6 +267,9 @@ export const HojasTrabajo: React.FC = () => {
                 Estado
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                Método de Pago
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                 Servicios
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -256,7 +286,7 @@ export const HojasTrabajo: React.FC = () => {
           <tbody className="bg-white divide-y divide-gray-200">
             {hojasFiltradas.length === 0 ? (
               <tr>
-                <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={10} className="px-6 py-12 text-center text-gray-500">
                   {searchTerm || estadoFilter !== 'todos' 
                     ? 'No se encontraron hojas de trabajo que coincidan con los filtros' 
                     : 'No hay hojas de trabajo disponibles'
@@ -290,6 +320,18 @@ export const HojasTrabajo: React.FC = () => {
                       <option value="en_proceso">En Proceso</option>
                       <option value="completado">Completado</option>
                       <option value="entregado">Entregado</option>
+                    </select>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <select
+                      value={hoja.metodo_pago}
+                      onChange={(e) => handleUpdateMetodoPago(hoja.id, e.target.value)}
+                      className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full border-0 ${getMetodoPagoColor(hoja.metodo_pago)}`}
+                    >
+                      <option value="pendiente">Pendiente</option>
+                      <option value="sinpe">SINPE</option>
+                      <option value="tarjeta">Tarjeta</option>
+                      <option value="efectivo">Efectivo</option>
                     </select>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">

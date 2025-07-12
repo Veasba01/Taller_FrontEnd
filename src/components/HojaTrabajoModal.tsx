@@ -31,6 +31,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
     telefono: '',
     observaciones: '',
     estado: 'pendiente',
+    metodo_pago: 'pendiente',
     servicios: []
   });
 
@@ -54,6 +55,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         telefono: hojaTrabajo.telefono || '',
         observaciones: hojaTrabajo.observaciones || '',
         estado: hojaTrabajo.estado || 'pendiente',
+        metodo_pago: hojaTrabajo.metodo_pago || 'pendiente',
         servicios: []
       });
 
@@ -74,6 +76,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
         telefono: '',
         observaciones: '',
         estado: 'pendiente',
+        metodo_pago: 'pendiente',
         servicios: []
       });
       setServiciosSeleccionados([]);
@@ -125,6 +128,7 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
             placa: formData.placa,
             telefono: formData.telefono,
             observaciones: formData.observaciones,
+            metodo_pago: formData.metodo_pago as 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo',
             servicios: serviciosSeleccionados.map(s => prepararServicioParaEnvio(s))
           };
 
@@ -135,7 +139,8 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
             placa: formData.placa,
             telefono: formData.telefono,
             observaciones: formData.observaciones,
-            estado: formData.estado as 'pendiente' | 'en_proceso' | 'completado' | 'entregado'
+            estado: formData.estado as 'pendiente' | 'en_proceso' | 'completado' | 'entregado',
+            metodo_pago: formData.metodo_pago as 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo'
           });
 
           // Actualizar los servicios masivamente
@@ -402,6 +407,25 @@ export const HojaTrabajoModal: React.FC<HojaTrabajoModalProps> = ({
                   </select>
                 </div>
               )}
+
+              {/* Método de Pago */}
+              <div>
+                <label htmlFor="metodo_pago" className="block text-sm font-medium text-gray-700 mb-1">
+                  Método de Pago
+                </label>
+                <select
+                  id="metodo_pago"
+                  name="metodo_pago"
+                  value={formData.metodo_pago}
+                  onChange={handleInputChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="pendiente">Pendiente</option>
+                  <option value="sinpe">SINPE</option>
+                  <option value="tarjeta">Tarjeta</option>
+                  <option value="efectivo">Efectivo</option>
+                </select>
+              </div>
             </div>
 
             {/* Observaciones */}

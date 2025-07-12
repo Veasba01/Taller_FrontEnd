@@ -32,6 +32,7 @@ export interface HojaTrabajo {
   telefono?: string;
   observaciones?: string;
   estado: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
+  metodo_pago: 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo';
   total: number;
   detalles: HojaTrabajoDetalle[];
   created_at: Date;
@@ -56,6 +57,7 @@ export interface CreateHojaTrabajoDto {
   placa?: string;
   telefono?: string;
   observaciones?: string;
+  metodo_pago?: 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo';
   servicios?: Array<{
     servicioId: number;
     comentario?: string;
@@ -70,6 +72,7 @@ export interface UpdateHojaTrabajoDto {
   telefono?: string;
   observaciones?: string;
   estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
+  metodo_pago?: 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo';
 }
 
 export interface UpdateHojaTrabajoConServiciosDto {
@@ -79,6 +82,7 @@ export interface UpdateHojaTrabajoConServiciosDto {
   telefono?: string;
   observaciones?: string;
   estado?: 'pendiente' | 'en_proceso' | 'completado' | 'entregado';
+  metodo_pago?: 'pendiente' | 'sinpe' | 'tarjeta' | 'efectivo';
   servicios?: Array<{
     servicioId: number;
     comentario?: string;
@@ -207,4 +211,18 @@ export interface EstadisticasGeneralesResponse {
     pendientes: number;
     porcentajeCompletados: string;
   };
+}
+
+// Nuevas interfaces para método de pago
+export interface MetodoPagoResponse {
+  metodo: string;
+  cantidad: number;
+  ingresos: number;
+  porcentaje: number;
+}
+
+export interface IngresosPorMetodoPagoResponse {
+  fecha: string;
+  metodos: MetodoPagoResponse[];
+  totalIngresos: number;
 }
