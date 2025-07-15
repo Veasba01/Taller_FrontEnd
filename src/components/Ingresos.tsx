@@ -1,5 +1,7 @@
 import React from 'react';
 import { MetodosPagoStats } from './MetodosPagoStats';
+import { ServiciosRealizados } from './ServiciosRealizados';
+import { IngresosServicios } from './IngresosServicios';
 
 export const Ingresos: React.FC = () => {
   return (
@@ -13,6 +15,12 @@ export const Ingresos: React.FC = () => {
 
       {/* Estadísticas de métodos de pago */}
       <MetodosPagoStats />
+
+      {/* Ingresos por servicio */}
+      <IngresosServicios />
+
+      {/* Servicios realizados */}
+      <ServiciosRealizados />
     </div>
   );
 };
