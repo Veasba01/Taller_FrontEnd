@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 interface ServicioRealizadoDto {
   id: number;
   nombre: string;
@@ -66,7 +68,7 @@ export const ServiciosRealizados: React.FC = () => {
   const cargarServiciosHoy = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/servicios/realizados/dia');
+      const response = await fetch(`${API_BASE_URL}/servicios/realizados/dia`);
       if (!response.ok) {
         throw new Error('Error al cargar servicios del día');
       }
@@ -86,7 +88,7 @@ export const ServiciosRealizados: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/servicios/realizados/periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
+        `${API_BASE_URL}/servicios/realizados/periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
       );
       if (!response.ok) {
         throw new Error('Error al cargar servicios del período');

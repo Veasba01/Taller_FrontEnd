@@ -21,10 +21,12 @@ import type {
   UpdateGastoDto,
   EstadisticasGastosResponse,
   GastosDelDiaResponse,
-  ResumenFinancieroResponse
+  ResumenFinancieroResponse,
+  ResumenCierreResponse,
+  CierreCajaResponse
 } from '../types';
 
-const API_BASE_URL = 'http://localhost:3000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
 
 export class ServiciosApi {
   private static baseUrl = `${API_BASE_URL}/servicios`;
@@ -610,6 +612,77 @@ export class GastosApi {
         console.error('Error en fallback obtenerDelMes:', fallbackError);
         throw error;
       }
+    }
+  }
+}
+
+export class CierreCajaApi {
+  private static baseUrl = `${API_BASE_URL}/cierre-caja`;
+
+  // Obtener resumen de cierre (sin crear el cierre)
+  static async obtenerResumenCierre(fecha?: string): Promise<ResumenCierreResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/resumen?fecha=${fecha}` : `${this.baseUrl}/resumen`;
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error(`Error al obtener resumen de cierre: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener resumen de cierre:', error);
+      throw error;
+    }
+  }
+
+  // Realizar cierre de caja
+  static async realizarCierre(fecha?: string): Promise<CierreCajaResponse> {
+    try {
+      const url = fecha ? `${this.baseUrl}/realizar?fecha=${fecha}` : `${this.baseUrl}/realizar`;
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Error al realizar cierre: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al realizar cierre:', error);
+      throw error;
+    }
+  }
+
+  // Obtener todos los cierres
+  static async obtenerTodosCierres(): Promise<CierreCajaResponse[]> {
+    try {
+      const response = await fetch(this.baseUrl);
+      if (!response.ok) {
+        throw new Error(`Error al obtener cierres: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener cierres:', error);
+      throw error;
+    }
+  }
+
+  // Obtener cierre por fecha
+  static async obtenerCierrePorFecha(fecha: string): Promise<CierreCajaResponse> {
+    try {
+      const response = await fetch(`${this.baseUrl}/fecha?fecha=${fecha}`);
+      if (!response.ok) {
+        if (response.status === 404) {
+          throw new Error('No existe un cierre para la fecha especificada');
+        }
+        throw new Error(`Error al obtener cierre por fecha: ${response.statusText}`);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error('Error al obtener cierre por fecha:', error);
+      throw error;
     }
   }
 }

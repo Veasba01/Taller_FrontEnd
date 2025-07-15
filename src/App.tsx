@@ -7,6 +7,7 @@ import { Servicios } from './components/Servicios';
 import { HojasTrabajo } from './components/HojasTrabajo';
 import { Ingresos } from './components/Ingresos';
 import { Gastos } from './components/Gastos';
+import { CierreCaja } from './components/CierreCaja';
 
 function App() {
   const [activeSection, setActiveSection] = useState('dashboard');
@@ -23,6 +24,8 @@ function App() {
         return <Gastos />;
       case 'ingresos':
         return <Ingresos />;
+      case 'cierre-caja':
+        return <CierreCaja />;
       case 'customers':
         return (
           <Placeholder

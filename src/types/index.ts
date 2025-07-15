@@ -296,3 +296,36 @@ export interface FiltroSemanaDto {
   año: number;
   semana: number;
 }
+
+// Tipos para Cierre de Caja
+export interface ServicioRealizadoResumen {
+  nombre: string;
+  cantidad: number;
+  total: number;
+}
+
+export interface DetalleGasto {
+  descripcion: string;
+  monto: number;
+}
+
+export interface ResumenCierreResponse {
+  fecha: string;
+  totalIngresos: number;
+  totalGastos: number;
+  saldoFinal: number;
+  detalleIngresos: {
+    cantidadServicios: number;
+    serviciosRealizados: ServicioRealizadoResumen[];
+  };
+  detalleGastos: DetalleGasto[];
+}
+
+export interface CierreCajaResponse {
+  fecha: string;
+  totalIngresos: number;
+  totalGastos: number;
+  saldoFinal: number;
+  createdAt: string;
+  updatedAt: string;
+}

@@ -12,6 +12,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activeSection, setActiveSection }) =>
     { id: 'worksheets', name: 'Hojas de Trabajo', icon: '📋' },
     { id: 'gastos', name: 'Gastos', icon: '📉' },
     { id: 'ingresos', name: 'Ingresos', icon: '💰' },
+    { id: 'cierre-caja', name: 'Cierre de Caja', icon: '🏦' },
   ];
 
   return (

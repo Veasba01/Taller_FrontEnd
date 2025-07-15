@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:3000';
+
 interface ServicioIngresoDto {
   nombre: string;
   descripcion: string;
@@ -60,7 +62,7 @@ export const IngresosServicios: React.FC = () => {
   const cargarIngresosHoy = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/servicios/ingresos/dia');
+      const response = await fetch(`${API_BASE_URL}/servicios/ingresos/dia`);
       if (!response.ok) {
         throw new Error('Error al cargar ingresos del día');
       }
@@ -80,7 +82,7 @@ export const IngresosServicios: React.FC = () => {
     try {
       setLoading(true);
       const response = await fetch(
-        `http://localhost:3000/servicios/ingresos/periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
+        `${API_BASE_URL}/servicios/ingresos/periodo?fechaInicio=${fechaInicio}&fechaFin=${fechaFin}`
       );
       if (!response.ok) {
         throw new Error('Error al cargar ingresos del período');
